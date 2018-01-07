@@ -2,8 +2,12 @@
 import os
 import time
 import re
+import json
 from slackclient import SlackClient
+from flask import Flask, request, make_response, Response
 
+#Initialize Flask Webserver
+app = Flask(__name__)
 
 def parse_bot_commands(slack_events):
     """
@@ -27,6 +31,8 @@ def parse_direct_mention(message_text):
     # the first group contains the username, the second group contains the remaining message
     return (matches.group(1), matches.group(2).strip()) if matches else (None, None)
 
+#Route For Server
+@app.route("/handle_command", methods=["POST"])
 def handle_command(command, channel):
     """
         Executes bot command if the command is known
@@ -34,20 +40,25 @@ def handle_command(command, channel):
     # Default response is help text for the user
     default_response = "Not sure what you mean. Try *{}*.".format(EXAMPLE_COMMAND)
 
+    # Parse the request payload
+    form_json = json.loads(request.form["payload"])
+
     # Finds and executes the given command, filling in response
     response = None
+
     # This is where you start to implement more commands!
     if command.startswith(EXAMPLE_COMMAND):
         response = "Sure...write some more code then I can do that!"  
-    # Get list of     
+
+    # Get list of users
     userList = slack_client.api_call(
          "im.list",
          token = 'xoxb-291704202337-GuHliRDvXenLZ4lhRN5f5GzV'
     )
-    print
+
+    # Iterate through userList and send message directly
     del userList['ims'][0]
     for user in userList['ims']:
-        print(user['user'])
         answer=slack_client.api_call(
             "chat.postMessage",
             #Toms slackbot DM
@@ -89,6 +100,8 @@ def handle_command(command, channel):
 # instantiate Slack client
 # token should not be instantiated directly this will need to be changed for security purposes
 slack_client = SlackClient('xoxb-291704202337-GuHliRDvXenLZ4lhRN5f5GzV')
+# Flask webserver for incoming traffic from Slack
+
 # starterbot's user ID in Slack: value is assigned after the bot starts up
 starterbot_id = None
 # constants
