@@ -39,45 +39,55 @@ def handle_command(command, channel):
     # This is where you start to implement more commands!
     if command.startswith(EXAMPLE_COMMAND):
         response = "Sure...write some more code then I can do that!"  
-
-    # Sends the response back to the channel
-    slack_client.api_call(
-        "chat.postMessage",
-        channel=channel,
-        text=response or default_response,
-         attachments= [
-                {
-            "text": "Stress Range Question",
-            "fallback": "Oops..You didn't pick a level",
-            "callback_id": "wopr_game",
-            "color": "#3AA3E3",
-            "attachment_type": "default",
-            "actions": [
-                {
-                    "name": "1-3",
-                    "text": "1-3",
-                    "type": "button",
-                    "value": "1-3"
-                },
-                {
-                    "name": "4-6",
-                    "text": "4-6",
-                    "type": "button",
-                    "value": "4-6"
-                },
-                {
-                    "name": "7-10",
-                    "text": "7-10",
-                    "type": "button",
-                    "value": "7-10",
-                }
-            ]
-        }
-    ]
-
+    # Get list of     
+    userList = slack_client.api_call(
+         "im.list",
+         token = 'xoxb-291704202337-GuHliRDvXenLZ4lhRN5f5GzV'
     )
-	
+    print
+    del userList['ims'][0]
+    for user in userList['ims']:
+        print(user['user'])
+        answer=slack_client.api_call(
+            "chat.postMessage",
+            #Toms slackbot DM
+            channel= user['user'],
+            as_user = True,
+            text=response or default_response,
+             attachments= [
+                    {
+                "text": "Stress Range Question",
+                "fallback": "Oops..You didn't pick a level",
+                "callback_id": "wopr_game",
+                "color": "#3AA3E3",
+                "attachment_type": "default",
+                "actions": [
+                    {
+                        "name": "1-3",
+                        "text": "1-3",
+                        "type": "button",
+                        "value": "1-3"
+                    },
+                    {
+                        "name": "4-6",
+                        "text": "4-6",
+                        "type": "button",
+                        "value": "4-6"
+                    },
+                    {
+                        "name": "7-10",
+                        "text": "7-10",
+                        "type": "button",
+                        "value": "7-10",
+                    }
+                ]
+            }
+        ]
+
+        )
+
 # instantiate Slack client
+# token should not be instantiated directly this will need to be changed for security purposes
 slack_client = SlackClient('xoxb-291704202337-GuHliRDvXenLZ4lhRN5f5GzV')
 # starterbot's user ID in Slack: value is assigned after the bot starts up
 starterbot_id = None
