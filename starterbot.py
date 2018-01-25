@@ -95,7 +95,7 @@
 #             }
 #         ]
 
-#         )
+#     )
 
 # # instantiate Slack client
 # # token should not be instantiated directly this will need to be changed for security purposes
@@ -147,12 +147,24 @@ attachments_json = [
         "attachment_type": "default",
         "callback_id": "menu_options_2319",
         "actions": [
-            {
-                "name": "games_list",
-                "text": "Pick a game...",
-                "type": "select",
-                "data_source": "external"
-            }
+        {
+             "name": "1-3",
+             "text": "1-3",
+             "type": "button",
+             "value": "1-3"
+         },
+         {
+            "name": "4-6",
+            "text": "4-6",
+             "type": "button",
+             "value": "4-6"
+         },
+        {
+             "name": "7-10",
+             "text": "7-10",
+             "type": "button",
+             "value": "7-10",
+         }
         ]
     }
 ]
@@ -161,7 +173,7 @@ attachments_json = [
 slack_client.api_call(
   "chat.postMessage",
   channel="C8LPBSMBP",
-  text="Shall we play a game?",
+  text="This is a missile warning, Matt.",
   attachments=attachments_json
 )
 
@@ -193,19 +205,21 @@ def message_actions():
     form_json = json.loads(request.form["payload"])
 
     # Check to see what the user's selection was and update the message
-    selection = form_json["actions"][0]["selected_options"][0]["value"]
-
-    if selection == "war":
-        message_text = "The only winning move is not to play.\nHow about a nice game of chess?"
-    else:
-        message_text = ":horse:"
+    #print(form_json);
 
     response = slack_client.api_call(
       "chat.update",
-      channel=form_json["channel"]["id"],
+      channel="C8LPBSMBP",
       ts=form_json["message_ts"],
-      text=message_text,
-      attachments=[]
+      text="This warning is completed!",
+      attachments=None
+    )
+
+    response = slack_client.api_call(
+      "chat.postMessage",
+      channel="C8LPBSMBP",
+      text="This is the second missile warning, Oliver.",
+      attachments=attachments_json
     )
     return make_response("", 200)
 
@@ -214,4 +228,4 @@ def hello():
     return 
 
 if __name__ == "__main__":
-    app.run(port=4390)
+    app.run(port=80)
