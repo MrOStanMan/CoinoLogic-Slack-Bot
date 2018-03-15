@@ -53,7 +53,7 @@
 #     # Get list of users
 #     userList = slack_client.api_call(
 #          "im.list",
-#          token = 'xoxb-291704202337-GuHliRDvXenLZ4lhRN5f5GzV'
+#          token = 'Removed'
 #     )
 
 #     # Iterate through userList and send message directly
